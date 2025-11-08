@@ -16,6 +16,7 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Arial', sans-serif;
+            touch-action: none;
         }
 
         #threeCanvas {
@@ -165,6 +166,99 @@
             font-size: 1rem;
             color: #ccc;
         }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 102;
+        }
+
+        .mobile-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .mobile-button:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        /* Touch Selection Panel */
+        .touch-selection {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 300px;
+            z-index: 103;
+            pointer-events: all;
+        }
+
+        .touch-portal {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .touch-portal:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        .touch-portal.web { border-color: #00a8ff; }
+        .touch-portal.app { border-color: #9c88ff; }
+        .touch-portal.video { border-color: #e84118; }
+        .touch-portal.design { border-color: #fbc531; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .mobile-controls {
+                display: flex;
+            }
+            
+            .touch-selection {
+                display: flex;
+            }
+            
+            .portal-info {
+                bottom: 120px;
+                width: 90%;
+                max-width: 400px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -186,6 +280,21 @@
         
         <div id="sectionTitle" class="section-title"></div>
         <div class="portal-info" id="portalInfo"></div>
+        
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <div class="mobile-button" id="rotateLeft">↶</div>
+            <div class="mobile-button" id="rotateRight">↷</div>
+            <div class="mobile-button" id="selectPortal">☰</div>
+        </div>
+        
+        <!-- Touch Selection Panel -->
+        <div class="touch-selection" id="touchSelection">
+            <div class="touch-portal web" data-section="web">Web Dev</div>
+            <div class="touch-portal app" data-section="app">App Dev</div>
+            <div class="touch-portal video" data-section="video">Video</div>
+            <div class="touch-portal design" data-section="design">Design</div>
+        </div>
     </div>
 
     <!-- 3D Canvas -->
@@ -201,6 +310,8 @@
         let portals = [];
         let mouse = { x: 0, y: 0 };
         let stars;
+        let isMobile = false;
+        let isTouchSelectionOpen = false;
 
         // Portal configurations
         const portalConfigs = {
@@ -236,6 +347,9 @@
 
         // Initialize the application
         function init() {
+            // Check if mobile device
+            isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
             createScene();
             createCamera();
             createRenderer();
@@ -304,6 +418,11 @@
             controls.maxPolarAngle = Math.PI / 2;
             controls.minDistance = 3;
             controls.maxDistance = 20;
+            
+            // Disable controls on mobile for better touch experience
+            if (isMobile) {
+                controls.enabled = false;
+            }
         }
 
         // Create lighting
@@ -325,48 +444,48 @@
 
         // Create central logo
         function createCentralLogo() {
-    // Create a custom 3D "B" logo for Buildify
-    const group = new THREE.Group();
+            // Create a custom 3D "B" logo for Buildify
+            const group = new THREE.Group();
 
-    // Main B shape
-    const bShape = new THREE.TorusGeometry(1.5, 0.3, 16, 100);
-    const bMaterial = new THREE.MeshStandardMaterial({ 
-        color: 0x00ff88,
-        emissive: 0x00ff88,
-        emissiveIntensity: 0.8
-    });
-    const bLogo = new THREE.Mesh(bShape, bMaterial);
-    group.add(bLogo);
+            // Main B shape
+            const bShape = new THREE.TorusGeometry(1.5, 0.3, 16, 100);
+            const bMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x00ff88,
+                emissive: 0x00ff88,
+                emissiveIntensity: 0.8
+            });
+            const bLogo = new THREE.Mesh(bShape, bMaterial);
+            group.add(bLogo);
 
-    // Additional elements for creativity
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particleCount = 50;
-    const posArray = new Float32Array(particleCount * 3);
+            // Additional elements for creativity
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particleCount = 50;
+            const posArray = new Float32Array(particleCount * 3);
 
-    for(let i = 0; i < particleCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 4;
-    }
+            for(let i = 0; i < particleCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 4;
+            }
 
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.1,
-        color: 0x00a8ff
-    });
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                color: 0x00a8ff
+            });
 
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    group.add(particlesMesh);
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            group.add(particlesMesh);
 
-    scene.add(group);
+            scene.add(group);
 
-    // Animation
-    function animateLogo() {
-        requestAnimationFrame(animateLogo);
-        group.rotation.y += 0.02;
-        group.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
-        particlesMesh.rotation.y -= 0.01;
-    }
-    animateLogo();
-}
+            // Animation
+            function animateLogo() {
+                requestAnimationFrame(animateLogo);
+                group.rotation.y += 0.02;
+                group.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                particlesMesh.rotation.y -= 0.01;
+            }
+            animateLogo();
+        }
 
         // Create portals
         function createPortals() {
@@ -434,7 +553,7 @@
             });
             
             // Rotate entire scene when in home section
-            if (currentSection === 'home') {
+            if (currentSection === 'home' && !isMobile) {
                 scene.rotation.y += 0.005;
             }
             
@@ -455,6 +574,88 @@
             
             // Home button
             document.getElementById('homeButton').addEventListener('click', goToHome);
+            
+            // Mobile controls
+            document.getElementById('rotateLeft').addEventListener('click', () => rotateScene(-0.5));
+            document.getElementById('rotateRight').addEventListener('click', () => rotateScene(0.5));
+            document.getElementById('selectPortal').addEventListener('click', toggleTouchSelection);
+            
+            // Touch portal selection
+            document.querySelectorAll('.touch-portal').forEach(portal => {
+                portal.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    navigateToSection(section);
+                    toggleTouchSelection(false);
+                });
+            });
+            
+            // Touch events for mobile
+            if (isMobile) {
+                renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+                renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
+                renderer.domElement.addEventListener('touchend', onTouchEnd);
+            }
+        }
+
+        // Mobile rotation function
+        function rotateScene(amount) {
+            scene.rotation.y += amount;
+        }
+
+        // Toggle touch selection panel
+        function toggleTouchSelection(forceState) {
+            const touchSelection = document.getElementById('touchSelection');
+            if (forceState !== undefined) {
+                isTouchSelectionOpen = forceState;
+            } else {
+                isTouchSelectionOpen = !isTouchSelectionOpen;
+            }
+            
+            touchSelection.style.display = isTouchSelectionOpen ? 'flex' : 'none';
+        }
+
+        // Touch event handlers
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                touchStartX = event.touches[0].clientX;
+                touchStartY = event.touches[0].clientY;
+                event.preventDefault();
+            }
+        }
+        
+        function onTouchMove(event) {
+            if (event.touches.length === 1 && currentSection === 'home') {
+                const touchX = event.touches[0].clientX;
+                const deltaX = touchX - touchStartX;
+                
+                // Rotate scene based on touch movement
+                scene.rotation.y += deltaX * 0.01;
+                
+                touchStartX = touchX;
+                event.preventDefault();
+            }
+        }
+        
+        function onTouchEnd(event) {
+            // Check if it was a tap (not a swipe)
+            if (event.changedTouches.length === 1) {
+                const touch = event.changedTouches[0];
+                const deltaX = Math.abs(touch.clientX - touchStartX);
+                const deltaY = Math.abs(touch.clientY - touchStartY);
+                
+                // If it was a tap (small movement), check for portal selection
+                if (deltaX < 10 && deltaY < 10) {
+                    // Convert touch position to normalized device coordinates
+                    mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+                    
+                    // Check for portal intersection
+                    checkPortalIntersection();
+                }
+            }
         }
 
         function onMouseMove(event) {
@@ -463,7 +664,39 @@
             updatePortalHoverEffects();
         }
 
+        function checkPortalIntersection() {
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            
+            portals.forEach(portal => {
+                if (!portal.isActive) return;
+                
+                const intersects = raycaster.intersectObject(portal.group, true);
+                if (intersects.length > 0) {
+                    navigateToSection(portal.type);
+                }
+            });
+        }
+
+        function onMouseClick() {
+            if (!isMobile) { // Only use click for non-mobile
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+                
+                portals.forEach(portal => {
+                    if (!portal.isActive) return;
+                    
+                    const intersects = raycaster.intersectObject(portal.group, true);
+                    if (intersects.length > 0) {
+                        navigateToSection(portal.type);
+                    }
+                });
+            }
+        }
+
         function updatePortalHoverEffects() {
+            if (isMobile) return; // Skip hover effects on mobile
+            
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
             
@@ -498,20 +731,6 @@
             } else {
                 portalInfo.classList.remove('visible');
             }
-        }
-
-        function onMouseClick() {
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            
-            portals.forEach(portal => {
-                if (!portal.isActive) return;
-                
-                const intersects = raycaster.intersectObject(portal.group, true);
-                if (intersects.length > 0) {
-                    navigateToSection(portal.type);
-                }
-            });
         }
 
         function navigateToSection(section) {
