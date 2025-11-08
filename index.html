@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buildify - 3D Portfolio</title>
+    <title>Buildify - Solar System Portfolio</title>
     <style>
         * {
             margin: 0;
@@ -17,13 +17,14 @@
             overflow: hidden;
             font-family: 'Arial', sans-serif;
             touch-action: none;
+            background: #000;
         }
 
         #threeCanvas {
             display: block;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
+            background: #000;
         }
 
         /* Loading Screen */
@@ -33,7 +34,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
+            background: #000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -44,10 +45,11 @@
         }
 
         .loading-screen h1 {
-            color: #00ff88;
+            color: #ff9d00;
             font-size: 4rem;
             margin-bottom: 20px;
             font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 157, 0, 0.7);
         }
 
         .loading-screen p {
@@ -67,7 +69,7 @@
 
         .loading-progress {
             height: 100%;
-            background: #00ff88;
+            background: linear-gradient(90deg, #ff9d00, #ff2e00);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -108,7 +110,7 @@
         .nav-button:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 157, 0, 0.3);
         }
 
         .home-button {
@@ -127,7 +129,7 @@
             text-align: center;
             opacity: 0;
             transition: opacity 0.5s ease;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            text-shadow: 0 0 20px rgba(255, 157, 0, 0.5);
             pointer-events: none;
         }
 
@@ -135,8 +137,8 @@
             opacity: 1;
         }
 
-        /* Portal Info */
-        .portal-info {
+        /* Planet Info */
+        .planet-info {
             position: absolute;
             bottom: 30px;
             left: 50%;
@@ -150,19 +152,21 @@
             padding: 15px 25px;
             border-radius: 10px;
             backdrop-filter: blur(10px);
+            max-width: 400px;
+            width: 90%;
         }
 
-        .portal-info.visible {
+        .planet-info.visible {
             opacity: 1;
         }
 
-        .portal-info h3 {
+        .planet-info h3 {
             font-size: 1.5rem;
             margin-bottom: 10px;
-            color: #00ff88;
+            color: #ff9d00;
         }
 
-        .portal-info p {
+        .planet-info p {
             font-size: 1rem;
             color: #ccc;
         }
@@ -201,44 +205,6 @@
             background: rgba(255, 255, 255, 0.2);
             transform: scale(0.95);
         }
-
-        /* Touch Selection Panel */
-        .touch-selection {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            flex-wrap: wrap;
-            gap: 10px;
-            max-width: 300px;
-            z-index: 103;
-            pointer-events: all;
-        }
-
-        .touch-portal {
-            flex: 1;
-            min-width: 120px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .touch-portal:active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(0.95);
-        }
-
-        .touch-portal.web { border-color: #00a8ff; }
-        .touch-portal.app { border-color: #9c88ff; }
-        .touch-portal.video { border-color: #e84118; }
-        .touch-portal.design { border-color: #fbc531; }
 
         /* Mobile Navigation Panel */
         .mobile-nav-panel {
@@ -314,6 +280,18 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Instructions */
+        .instructions {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: white;
+            text-align: right;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .section-title {
@@ -324,10 +302,12 @@
                 display: flex;
             }
             
-            .portal-info {
+            .planet-info {
                 bottom: 120px;
-                width: 90%;
-                max-width: 400px;
+            }
+            
+            .instructions {
+                display: none;
             }
         }
     </style>
@@ -335,8 +315,8 @@
 <body>
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
-        <h1>BUILDIFY</h1>
-        <p>Building your digital vision</p>
+        <h1>SOLAR PORTFOLIO</h1>
+        <p>Exploring digital galaxies</p>
         <div class="loading-bar">
             <div class="loading-progress"></div>
         </div>
@@ -346,11 +326,19 @@
     <!-- UI Overlay -->
     <div class="ui-overlay">
         <button id="homeButton" class="nav-button home-button" style="display: none;">
-            ← Back to Home
+            ← Back to Solar System
         </button>
         
         <div id="sectionTitle" class="section-title"></div>
-        <div class="portal-info" id="portalInfo"></div>
+        <div class="planet-info" id="planetInfo"></div>
+        
+        <!-- Instructions -->
+        <div class="instructions" id="desktopInstructions">
+            Desktop: Hover over planets<br>Click to explore projects
+        </div>
+        <div class="instructions" id="mobileInstructions" style="display: none;">
+            Mobile: Tap planets or use menu
+        </div>
         
         <!-- Mobile Controls -->
         <div class="mobile-controls">
@@ -365,26 +353,26 @@
             
             <div class="mobile-nav-item web" data-section="web">
                 <div class="mobile-nav-icon">🌐</div>
-                <div class="mobile-nav-title">Web Dev</div>
-                <div class="mobile-nav-desc">Interactive websites</div>
+                <div class="mobile-nav-title">Web Planet</div>
+                <div class="mobile-nav-desc">Web Development</div>
             </div>
             
             <div class="mobile-nav-item app" data-section="app">
                 <div class="mobile-nav-icon">📱</div>
-                <div class="mobile-nav-title">App Dev</div>
-                <div class="mobile-nav-desc">Mobile applications</div>
+                <div class="mobile-nav-title">App Planet</div>
+                <div class="mobile-nav-desc">App Development</div>
             </div>
             
             <div class="mobile-nav-item video" data-section="video">
                 <div class="mobile-nav-icon">🎬</div>
-                <div class="mobile-nav-title">Video</div>
-                <div class="mobile-nav-desc">Editing & production</div>
+                <div class="mobile-nav-title">Video Planet</div>
+                <div class="mobile-nav-desc">Video Production</div>
             </div>
             
             <div class="mobile-nav-item design" data-section="design">
                 <div class="mobile-nav-icon">🎨</div>
-                <div class="mobile-nav-title">Design</div>
-                <div class="mobile-nav-desc">UI/UX & branding</div>
+                <div class="mobile-nav-title">Design Planet</div>
+                <div class="mobile-nav-desc">Design Studio</div>
             </div>
         </div>
     </div>
@@ -399,46 +387,59 @@
     <script>
         let scene, camera, renderer, controls;
         let currentSection = 'home';
-        let portals = [];
+        let planets = [];
         let mouse = { x: 0, y: 0 };
-        let stars;
+        let stars, sun;
         let isMobile = false;
         let isMobileNavOpen = false;
         let autoRotate = true;
+        let raycaster = new THREE.Raycaster();
 
-        // Portal configurations
-        const portalConfigs = {
+        // Planet configurations - Solar System Theme
+        const planetConfigs = {
             web: { 
                 color: 0x00a8ff, 
-                title: 'WEB DEVELOPMENT', 
+                title: 'WEB PLANET', 
                 description: 'Interactive websites and web applications',
-                position: { x: 5, y: 3, z: 0 },
+                position: { x: 12, y: 0, z: 0 },
+                radius: 1.2,
+                speed: 0.003,
                 page: 'web-projects.html',
-                icon: '🌐'
+                icon: '🌐',
+                texture: null
             },
             app: { 
                 color: 0x9c88ff, 
-                title: 'APP DEVELOPMENT', 
+                title: 'APP PLANET', 
                 description: 'Mobile and desktop applications',
-                position: { x: -5, y: 3, z: 0 },
+                position: { x: -10, y: 0, z: 8 },
+                radius: 1.0,
+                speed: 0.004,
                 page: 'app-projects.html',
-                icon: '📱'
+                icon: '📱',
+                texture: null
             },
             video: { 
                 color: 0xe84118, 
-                title: 'VIDEO EDITING', 
+                title: 'VIDEO PLANET', 
                 description: 'Cinematic videos and motion graphics',
-                position: { x: -5, y: -3, z: 0 },
+                position: { x: -8, y: 0, z: -10 },
+                radius: 1.4,
+                speed: 0.0025,
                 page: 'video-projects.html',
-                icon: '🎬'
+                icon: '🎬',
+                texture: null
             },
             design: { 
                 color: 0xfbc531, 
-                title: 'DESIGN STUDIO', 
+                title: 'DESIGN PLANET', 
                 description: 'UI/UX and brand identity design',
-                position: { x: 5, y: -3, z: 0 },
+                position: { x: 9, y: 0, z: -8 },
+                radius: 1.1,
+                speed: 0.0035,
                 page: 'design-projects.html',
-                icon: '🎨'
+                icon: '🎨',
+                texture: null
             }
         };
 
@@ -453,8 +454,9 @@
             createControls();
             createLights();
             createStars();
-            createCentralLogo();
-            createPortals();
+            createSun();
+            createOrbits();
+            createPlanets();
             
             animate();
             setupEventListeners();
@@ -463,41 +465,190 @@
             // Show mobile controls if on mobile
             if (isMobile) {
                 document.querySelector('.mobile-controls').style.display = 'flex';
+                document.getElementById('mobileInstructions').style.display = 'block';
+                document.getElementById('desktopInstructions').style.display = 'none';
             }
         }
 
         // Create Three.js scene
         function createScene() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a0a);
+            scene.background = new THREE.Color(0x000000);
+            scene.fog = new THREE.Fog(0x000000, 10, 100);
         }
 
         // Create stars background
         function createStars() {
             const starsGeometry = new THREE.BufferGeometry();
-            const starsCount = 5000;
+            const starsCount = 10000;
             const positions = new Float32Array(starsCount * 3);
+            const colors = new Float32Array(starsCount * 3);
 
-            for (let i = 0; i < starsCount * 3; i++) {
+            for (let i = 0; i < starsCount * 3; i += 3) {
                 positions[i] = (Math.random() - 0.5) * 2000;
+                positions[i+1] = (Math.random() - 0.5) * 2000;
+                positions[i+2] = (Math.random() - 0.5) * 2000;
+                
+                // Random star colors
+                colors[i] = Math.random() * 0.5 + 0.5;   // R
+                colors[i+1] = Math.random() * 0.5 + 0.5; // G  
+                colors[i+2] = Math.random() * 0.5 + 0.5; // B
             }
 
             starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
             const starsMaterial = new THREE.PointsMaterial({
-                color: 0xffffff,
                 size: 1.5,
-                sizeAttenuation: true
+                sizeAttenuation: true,
+                vertexColors: true
             });
 
             stars = new THREE.Points(starsGeometry, starsMaterial);
             scene.add(stars);
         }
 
+        // Create the Sun
+        function createSun() {
+            const sunGeometry = new THREE.SphereGeometry(4, 32, 32);
+            const sunMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff9d00,
+                emissive: 0xff4500,
+                emissiveIntensity: 0.8
+            });
+            
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            
+            // Add glow effect
+            const glowGeometry = new THREE.SphereGeometry(4.5, 32, 32);
+            const glowMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    glowColor: { value: new THREE.Color(0xff9d00) },
+                    viewVector: { value: camera.position }
+                },
+                vertexShader: `
+                    uniform vec3 viewVector;
+                    varying float intensity;
+                    void main() {
+                        vec3 vNormal = normalize(normalMatrix * normal);
+                        vec3 vNormel = normalize(normalMatrix * viewVector);
+                        intensity = pow(0.6 - dot(vNormal, vNormel), 2.0);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 glowColor;
+                    varying float intensity;
+                    void main() {
+                        vec3 glow = glowColor * intensity;
+                        gl_FragColor = vec4(glow, 1.0);
+                    }
+                `,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending,
+                transparent: true
+            });
+            
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            sun.add(glow);
+            scene.add(sun);
+
+            // Sun animation
+            function animateSun() {
+                requestAnimationFrame(animateSun);
+                sun.rotation.y += 0.005;
+                // Pulsating effect
+                const scale = 1 + Math.sin(Date.now() * 0.002) * 0.05;
+                sun.scale.set(scale, scale, scale);
+            }
+            animateSun();
+        }
+
+        // Create orbital paths
+        function createOrbits() {
+            Object.keys(planetConfigs).forEach(type => {
+                const config = planetConfigs[type];
+                const orbitGeometry = new THREE.RingGeometry(config.radius * 5, config.radius * 5 + 0.1, 64);
+                const orbitMaterial = new THREE.MeshBasicMaterial({ 
+                    color: config.color,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+                orbit.rotation.x = Math.PI / 2;
+                scene.add(orbit);
+            });
+        }
+
+        // Create planets
+        function createPlanets() {
+            Object.keys(planetConfigs).forEach(type => {
+                createPlanet(type, planetConfigs[type]);
+            });
+        }
+
+        function createPlanet(type, config) {
+            const group = new THREE.Group();
+            
+            // Planet sphere
+            const planetGeometry = new THREE.SphereGeometry(config.radius, 32, 32);
+            const planetMaterial = new THREE.MeshStandardMaterial({ 
+                color: config.color,
+                emissive: config.color,
+                emissiveIntensity: 0.3,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+            group.add(planet);
+            
+            // Add rings for some planets
+            if (type === 'design' || type === 'app') {
+                const ringGeometry = new THREE.RingGeometry(config.radius * 1.2, config.radius * 1.5, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({ 
+                    color: config.color,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = Math.PI / 2;
+                group.add(ring);
+            }
+            
+            // Add glow effect
+            const glowGeometry = new THREE.SphereGeometry(config.radius * 1.1, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: config.color,
+                transparent: true,
+                opacity: 0.3
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            group.add(glow);
+            
+            // Position the planet
+            group.position.set(config.position.x, config.position.y, config.position.z);
+            
+            // Store planet data
+            const planetData = {
+                group: group,
+                planet: planet,
+                glow: glow,
+                type: type,
+                config: config,
+                angle: Math.random() * Math.PI * 2,
+                isActive: true
+            };
+            
+            planets.push(planetData);
+            scene.add(group);
+        }
+
         // Create camera
         function createCamera() {
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 8);
+            camera.position.set(0, 15, 25);
         }
 
         // Create renderer
@@ -517,9 +668,8 @@
             controls.dampingFactor = 0.05;
             controls.enableZoom = true;
             controls.enablePan = false;
-            controls.maxPolarAngle = Math.PI / 2;
-            controls.minDistance = 3;
-            controls.maxDistance = 20;
+            controls.minDistance = 10;
+            controls.maxDistance = 50;
             
             // Disable controls on mobile for better touch experience
             if (isMobile) {
@@ -530,109 +680,22 @@
         // Create lighting
         function createLights() {
             // Ambient light
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
             scene.add(ambientLight);
 
-            // Directional light
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(10, 10, 10);
+            // Directional light (sun light)
+            const directionalLight = new THREE.DirectionalLight(0xff9d00, 1);
+            directionalLight.position.set(0, 0, 0);
             scene.add(directionalLight);
 
-            // Point light
-            const pointLight = new THREE.PointLight(0x00ff88, 0.5, 100);
-            pointLight.position.set(0, 0, 5);
-            scene.add(pointLight);
-        }
+            // Point lights for planets
+            const pointLight1 = new THREE.PointLight(0x00a8ff, 0.5, 20);
+            pointLight1.position.set(12, 0, 0);
+            scene.add(pointLight1);
 
-        // Create central logo
-        function createCentralLogo() {
-            // Create a custom 3D "B" logo for Buildify
-            const group = new THREE.Group();
-
-            // Main B shape
-            const bShape = new THREE.TorusGeometry(1.5, 0.3, 16, 100);
-            const bMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x00ff88,
-                emissive: 0x00ff88,
-                emissiveIntensity: 0.8
-            });
-            const bLogo = new THREE.Mesh(bShape, bMaterial);
-            group.add(bLogo);
-
-            // Additional elements for creativity
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particleCount = 50;
-            const posArray = new Float32Array(particleCount * 3);
-
-            for(let i = 0; i < particleCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 4;
-            }
-
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.1,
-                color: 0x00a8ff
-            });
-
-            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-            group.add(particlesMesh);
-
-            scene.add(group);
-
-            // Animation
-            function animateLogo() {
-                requestAnimationFrame(animateLogo);
-                group.rotation.y += 0.02;
-                group.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
-                particlesMesh.rotation.y -= 0.01;
-            }
-            animateLogo();
-        }
-
-        // Create portals
-        function createPortals() {
-            Object.keys(portalConfigs).forEach(type => {
-                createPortal(type, portalConfigs[type]);
-            });
-        }
-
-        function createPortal(type, config) {
-            const group = new THREE.Group();
-            group.position.set(config.position.x, config.position.y, config.position.z);
-            
-            // Outer ring
-            const ringGeometry = new THREE.TorusGeometry(1.5, 0.1, 16, 100);
-            const ringMaterial = new THREE.MeshStandardMaterial({ 
-                color: config.color,
-                emissive: config.color,
-                emissiveIntensity: 0.8
-            });
-            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-            group.add(ring);
-
-            // Portal surface
-            const portalGeometry = new THREE.CircleGeometry(1.2, 32);
-            const portalMaterial = new THREE.MeshStandardMaterial({
-                color: config.color,
-                transparent: true,
-                opacity: 0.7,
-                side: THREE.DoubleSide
-            });
-            const portal = new THREE.Mesh(portalGeometry, portalMaterial);
-            group.add(portal);
-
-            // Store portal data
-            const portalData = {
-                group: group,
-                ring: ring,
-                portal: portal,
-                type: type,
-                config: config,
-                isActive: true
-            };
-            
-            portals.push(portalData);
-            scene.add(group);
+            const pointLight2 = new THREE.PointLight(0x9c88ff, 0.5, 20);
+            pointLight2.position.set(-10, 0, 8);
+            scene.add(pointLight2);
         }
 
         // Animation loop
@@ -645,18 +708,33 @@
                 stars.rotation.y += 0.0002;
             }
             
-            // Rotate rings and add floating animation
-            portals.forEach(portal => {
-                if (portal.isActive) {
-                    portal.ring.rotation.z += 0.02;
-                    // Floating animation
-                    portal.group.position.y = portal.config.position.y + Math.sin(Date.now() * 0.001 + portal.config.position.x) * 0.2;
+            // Animate planets in orbits
+            planets.forEach(planetData => {
+                if (planetData.isActive) {
+                    // Update orbital position
+                    planetData.angle += planetData.config.speed;
+                    const radius = Math.sqrt(
+                        planetData.config.position.x * planetData.config.position.x +
+                        planetData.config.position.z * planetData.config.position.z
+                    );
+                    
+                    planetData.group.position.x = Math.cos(planetData.angle) * radius;
+                    planetData.group.position.z = Math.sin(planetData.angle) * radius;
+                    
+                    // Rotate planet
+                    planetData.planet.rotation.y += 0.02;
+                    
+                    // Pulsating glow
+                    const glowScale = 1 + Math.sin(Date.now() * 0.003 + planetData.angle) * 0.1;
+                    planetData.glow.scale.set(glowScale, glowScale, glowScale);
                 }
             });
             
-            // Auto-rotate scene when in home section (unless user is interacting)
+            // Auto-rotate camera when in home section
             if (currentSection === 'home' && autoRotate && !isMobile) {
-                scene.rotation.y += 0.005;
+                camera.position.x = Math.sin(Date.now() * 0.0005) * 25;
+                camera.position.z = Math.cos(Date.now() * 0.0005) * 25;
+                camera.lookAt(0, 0, 0);
             }
             
             controls.update();
@@ -678,14 +756,14 @@
             document.getElementById('homeButton').addEventListener('click', goToHome);
             
             // Mobile controls
-            document.getElementById('rotateLeft').addEventListener('click', () => rotateScene(-0.5));
-            document.getElementById('rotateRight').addEventListener('click', () => rotateScene(0.5));
+            document.getElementById('rotateLeft').addEventListener('click', () => rotateCamera(-0.5));
+            document.getElementById('rotateRight').addEventListener('click', () => rotateCamera(0.5));
             document.getElementById('selectPortal').addEventListener('click', toggleMobileNav);
             
             // Mobile navigation
             document.getElementById('closePanel').addEventListener('click', () => toggleMobileNav(false));
             
-            // Mobile portal selection
+            // Mobile planet selection
             document.querySelectorAll('.mobile-nav-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const section = this.getAttribute('data-section');
@@ -702,6 +780,13 @@
                     touchStartX = e.touches[0].clientX;
                     isDragging = true;
                     autoRotate = false;
+                    
+                    // Check for planet tap
+                    const touch = e.touches[0];
+                    mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+                    checkPlanetIntersection();
+                    
                     e.preventDefault();
                 }, { passive: false });
                 
@@ -711,8 +796,8 @@
                     const touchX = e.touches[0].clientX;
                     const deltaX = touchX - touchStartX;
                     
-                    // Rotate scene based on touch movement
-                    scene.rotation.y += deltaX * 0.01;
+                    // Rotate camera based on touch movement
+                    rotateCamera(deltaX * 0.01);
                     
                     touchStartX = touchX;
                     e.preventDefault();
@@ -723,7 +808,7 @@
                     // Re-enable auto-rotate after a delay
                     setTimeout(() => {
                         autoRotate = true;
-                    }, 3000);
+                    }, 5000);
                 });
                 
                 // Double tap to open navigation
@@ -743,15 +828,26 @@
             }
         }
 
-        // Mobile rotation function
-        function rotateScene(amount) {
+        // Mobile camera rotation
+        function rotateCamera(amount) {
             autoRotate = false;
-            scene.rotation.y += amount;
+            
+            // Calculate current camera angle
+            const angle = Math.atan2(camera.position.z, camera.position.x);
+            const newAngle = angle + amount;
+            const radius = Math.sqrt(
+                camera.position.x * camera.position.x +
+                camera.position.z * camera.position.z
+            );
+            
+            camera.position.x = Math.cos(newAngle) * radius;
+            camera.position.z = Math.sin(newAngle) * radius;
+            camera.lookAt(0, 0, 0);
             
             // Re-enable auto-rotate after a delay
             setTimeout(() => {
                 autoRotate = true;
-            }, 3000);
+            }, 5000);
         }
 
         // Toggle mobile navigation panel
@@ -770,61 +866,75 @@
         function onMouseMove(event) {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-            updatePortalHoverEffects();
+            updatePlanetHoverEffects();
         }
 
         function onMouseClick() {
-            if (!isMobile) { // Only use click for non-mobile
-                const raycaster = new THREE.Raycaster();
-                raycaster.setFromCamera(mouse, camera);
-                
-                portals.forEach(portal => {
-                    if (!portal.isActive) return;
-                    
-                    const intersects = raycaster.intersectObject(portal.group, true);
-                    if (intersects.length > 0) {
-                        navigateToSection(portal.type);
-                    }
-                });
+            if (!isMobile) {
+                checkPlanetIntersection();
             }
         }
 
-        function updatePortalHoverEffects() {
-            if (isMobile) return; // Skip hover effects on mobile
-            
-            const raycaster = new THREE.Raycaster();
+        function checkPlanetIntersection() {
             raycaster.setFromCamera(mouse, camera);
             
-            let hoveredPortal = null;
+            let closestPlanet = null;
+            let closestDistance = Infinity;
             
-            portals.forEach(portal => {
-                if (!portal.isActive) return;
+            planets.forEach(planetData => {
+                if (!planetData.isActive) return;
                 
-                const intersects = raycaster.intersectObject(portal.group, true);
+                const intersects = raycaster.intersectObject(planetData.planet, true);
+                if (intersects.length > 0) {
+                    const distance = intersects[0].distance;
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPlanet = planetData;
+                    }
+                }
+            });
+            
+            if (closestPlanet) {
+                navigateToSection(closestPlanet.type);
+            }
+        }
+
+        function updatePlanetHoverEffects() {
+            if (isMobile) return;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            let hoveredPlanet = null;
+            
+            planets.forEach(planetData => {
+                if (!planetData.isActive) return;
+                
+                const intersects = raycaster.intersectObject(planetData.planet, true);
                 const isHovered = intersects.length > 0;
                 
                 // Update cursor
                 renderer.domElement.style.cursor = isHovered ? 'pointer' : 'default';
                 
-                // Update portal appearance
-                portal.ring.material.emissiveIntensity = isHovered ? 1.2 : 0.8;
-                portal.portal.material.opacity = isHovered ? 0.9 : 0.7;
+                // Update planet appearance
+                planetData.planet.material.emissiveIntensity = isHovered ? 0.8 : 0.3;
+                planetData.glow.material.opacity = isHovered ? 0.6 : 0.3;
                 
                 if (isHovered) {
-                    hoveredPortal = portal;
+                    hoveredPlanet = planetData;
                 }
             });
             
-            // Update portal info display
-            const portalInfo = document.getElementById('portalInfo');
-            if (hoveredPortal && currentSection === 'home') {
-                portalInfo.innerHTML = `
-                    <h3>${hoveredPortal.config.title}</h3>
-                    <p>${hoveredPortal.config.description}</p>
+            // Update planet info display
+            const planetInfo = document.getElementById('planetInfo');
+            if (hoveredPlanet && currentSection === 'home') {
+                planetInfo.innerHTML = `
+                    <h3>${hoveredPlanet.config.title}</h3>
+                    <p>${hoveredPlanet.config.description}</p>
+                    <p style="margin-top: 8px; font-size: 0.9rem;">Click to explore</p>
                 `;
-                portalInfo.classList.add('visible');
+                planetInfo.classList.add('visible');
             } else {
-                portalInfo.classList.remove('visible');
+                planetInfo.classList.remove('visible');
             }
         }
 
@@ -833,7 +943,7 @@
             
             // Update UI
             document.getElementById('homeButton').style.display = 'block';
-            document.getElementById('sectionTitle').textContent = portalConfigs[section].title;
+            document.getElementById('sectionTitle').textContent = planetConfigs[section].title;
             document.getElementById('sectionTitle').classList.add('visible');
             
             // Close mobile nav if open
@@ -841,22 +951,22 @@
                 toggleMobileNav(false);
             }
             
-            // Disable portals
-            portals.forEach(portal => {
-                portal.isActive = false;
+            // Disable planets
+            planets.forEach(planet => {
+                planet.isActive = false;
             });
             
-            // Move camera to section view and then navigate to projects page
+            // Move camera to planet view and then navigate to projects page
             const targetPosition = new THREE.Vector3(
-                portalConfigs[section].position.x * 1.5,
-                portalConfigs[section].position.y * 1.5,
-                12
+                planetConfigs[section].position.x * 1.2,
+                3,
+                planetConfigs[section].position.z * 1.2
             );
             
             animateCamera(targetPosition, () => {
                 // After camera animation completes, navigate to projects page
                 setTimeout(() => {
-                    window.location.href = portalConfigs[section].page;
+                    window.location.href = planetConfigs[section].page;
                 }, 1000);
             });
         }
@@ -867,21 +977,22 @@
             // Update UI
             document.getElementById('homeButton').style.display = 'none';
             document.getElementById('sectionTitle').classList.remove('visible');
+            document.getElementById('planetInfo').classList.remove('visible');
             
-            // Enable portals
-            portals.forEach(portal => {
-                portal.isActive = true;
+            // Enable planets
+            planets.forEach(planet => {
+                planet.isActive = true;
             });
             
-            // Move camera back to home position
-            const homePosition = new THREE.Vector3(0, 0, 8);
+            // Move camera back to overview position
+            const homePosition = new THREE.Vector3(0, 15, 25);
             animateCamera(homePosition);
         }
 
         function animateCamera(targetPosition, onComplete) {
             const startPosition = camera.position.clone();
             const startTime = Date.now();
-            const duration = 1000;
+            const duration = 1500;
             
             function updateCamera() {
                 const currentTime = Date.now();
@@ -892,6 +1003,7 @@
                 const ease = 1 - Math.pow(1 - progress, 3);
                 
                 camera.position.lerpVectors(startPosition, targetPosition, ease);
+                camera.lookAt(0, 0, 0);
                 
                 if (progress < 1) {
                     requestAnimationFrame(updateCamera);
